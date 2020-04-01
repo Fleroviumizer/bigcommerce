@@ -1,0 +1,19 @@
+{
+    "name": "fleroviumizer/bigcommerce",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jerson Ramos",
+            "email": "jerson.s.ramos@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+      "psr-4": {
+         "Fleroviumizer\\Bigcommerce\\": "src/"
+       }
+    },
+    "description": ""
+}
