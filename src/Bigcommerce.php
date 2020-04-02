@@ -17,12 +17,6 @@ class Bigcommerce{
     protected $client_secret;
     protected $store_hash;
     protected $access_token;
-    protected $version = "v3";
-    protected $api;
-    protected $connection;
-    protected $store_url;
-    protected $username;
-    protected $api_key;
 
     protected $redirect_uri;
     protected $grant_type = 'authorization_code';
@@ -30,6 +24,8 @@ class Bigcommerce{
     protected $code;
     protected $scope;
     protected $context;
+
+    protected $auth_response = null;
 
     public function __call($name, $arguments)
     {
@@ -40,7 +36,7 @@ class Bigcommerce{
         }
     }
 
-    public function authenticate()
+    public function authenticate() : bool 
     {
         $payload = $this->payload();
 
@@ -56,20 +52,18 @@ class Bigcommerce{
 
             $this->store_hash = $array_store_hash[1];
 
-            $storage = [
+            $this->setAuthenticationResponse([
                 'store_hash' => $this->store_hash,
                 'access_token' => $this->access_token,
                 'email' => $response_data['user']['email']
-            ];
+            ]);
 
-            return 'App installed successfully';
+            return true;
         }
 
-        return 'App installation failed. ' . $response->status() . ' : ' . $response->body();
+        return false;
 
     }
-
-
 
     private function payload()
     {
@@ -84,35 +78,17 @@ class Bigcommerce{
         ];
     }
 
-    public function setConnection($connection_name = 'oAuth')
+    public function setAuthenticationResponse($auth_response = [])
     {
-
-        $connections = ['oAuth'];
-
-        if (! in_array($connection_name, $connections))
-            throw new Exception('Connection not found.');
-
-        $this->connection = $connection_name;
-        $this->$connection_name();
+        $this->auth_response = $auth_response;
     }
 
-    public function verifyPeer($option = false)
+    public function getAuthenticationResponse()
     {
-        $this->api->verifyPeer($option);
+        if (!is_null($this->auth_response) && !empty($this->auth_response))
+            return $this->auth_response;
 
-        return $this;
-    }
-
-    private function oAuth()
-    {
-
-        $this->api = new BigcommerceClient;
-
-        $this->api->configure(array(
-            'client_id' => $this->client_id,
-            'auth_token' => $this->access_token,
-            'store_hash' => $this->store_hash
-        ));
+        return [];
     }
 
     /*
@@ -121,12 +97,6 @@ class Bigcommerce{
     public function setStoreHash($store_hash)
     {
         $this->store_hash = $store_hash;
-        return $this;
-    }
-
-    public function setApiVersion($version)
-    {
-        $this->version = $version;
         return $this;
     }
 
@@ -148,24 +118,6 @@ class Bigcommerce{
         return $this;
     }
 
-    public function setStoreUrl($store_url)
-    {
-        $this->store_url = $store_url;
-        return $this;
-    }
-
-    public function setUsername($username)
-    {
-        $this->username = $username;
-        return $this;
-    }
-
-    public function setApiKey($api_key)
-    {
-        $this->api_key = $api_key;
-        return $this;
-    }
-
     public function setCode($code)
     {
         $this->code = $code;
@@ -181,6 +133,12 @@ class Bigcommerce{
     public function setContext($context)
     {
         $this->context = $context;
+        return $this;
+    }
+
+    public function setRedirectUri($redirect_uri)
+    {
+        $this->redirect_uri = $redirect_uri;
         return $this;
     }
 

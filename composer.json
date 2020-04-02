@@ -9,7 +9,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "fleroviumizer/bigcommerce": "dev-master"
+    },
     "autoload": {
       "psr-4": {
          "Fleroviumizer\\Bigcommerce\\": "src/"
